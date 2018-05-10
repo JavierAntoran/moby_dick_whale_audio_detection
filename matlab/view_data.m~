@@ -1,0 +1,43 @@
+%%
+clc
+close all
+clear all
+%
+Nsample = 6;
+
+audiofilename = sprintf('../whale_data/train/train%d.aiff', Nsample);
+
+[x,Fs] = audioread(audiofilename);
+
+csvfile = '../whale_data/train.csv';
+labels = csvread(csvfile, 1, 1);
+pos_labels = find(labels == 1);
+label = labels(Nsample);
+
+%%
+
+M = Fs * 0.01; %avance entre vetanas
+N = Fs * 0.03; %windowsize
+
+X = windower(x, M, N);%
+% M avance entre vetanas
+% N windowsize
+
+W = hamming(N);
+X_hamm = W .* X; % hamming window, automatic broadcasting
+%
+% X = buffer(x, N, M, 'nodelay');
+
+% fft default applies to first dimension -> columns
+S = abs(fft(X_hamm));
+S = S(1:end/2,:);
+figure
+imagesc(S)
+axis xy
+ylabel('freq coeficients')
+xlabel('Nwindow')
+title('Spectogram S')
+
+
+%%
+
