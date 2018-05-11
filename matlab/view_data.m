@@ -3,11 +3,15 @@ clc
 close all
 clear all
 %
-Nsample = 1;
+Nsample = 9;
 
 audiofilename = sprintf('../whale_data/train/train%d.aiff', Nsample);
 
 [x,Fs] = audioread(audiofilename);
+
+downsample_factor = 2; % go to 1kHz
+x = downsample(x, downsample_factor);
+Fs = Fs/downsample_factor;
 
 csvfile = '../whale_data/train.csv';
 labels = csvread(csvfile, 1, 1);
@@ -47,5 +51,16 @@ xlabel('Nwindow')
 title('Spectogram S')
 
 
-%%
+%% delta features
 
+d1 = [-1.0000,   -0.7500,   -0.5000,   -0.2500,         0,    0.2500,    0.5000,   0.7500,    1.0000];
+d2 = [ 1.0000,    0.2500,   -0.2857,   -0.6071,   -0.7143,   -0.6071,   -0.2857,   0.2500,    1.0000];
+S_d  = filter2(d1,S);
+S_dd = filter2(d2,S);
+
+figure
+imagesc(nwins, f, S_d)
+axis xy
+ylabel('freq (Hz)')
+xlabel('Nwindow')
+title('delta Spectogram S')
