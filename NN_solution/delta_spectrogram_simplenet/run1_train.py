@@ -19,8 +19,8 @@ mkdir('results')
 # ------------------------------------------------------------------------------------------------------
 # train config
 
-batch_size = 128
-nb_epochs = 100
+batch_size = 64
+nb_epochs = 20
 log_interval = 1
 
 # ------------------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ ready_data = np.load('../data/processed_data.npy')
 print(ready_data.shape)
 print(ready_data.dtype)
 # Randomize
-shuffle_in_unison_scary(ready_data, Tn)
+# shuffle_in_unison_scary(ready_data, Tn)
 
 # train test split
 cutoff = np.round(ready_data.shape[0] * 0.9).astype(int)
