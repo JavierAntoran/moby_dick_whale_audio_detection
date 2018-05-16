@@ -1,5 +1,5 @@
 import numpy as np
-import signal
+from scipy.signal import decimate
 
 def windower(x, M, N):
     # M avance entre vetanas
@@ -63,7 +63,7 @@ ready_data = np.zeros((sounds.shape[0], 198, int(NFFT / 2), 3))
 
 for i in range(sounds.shape[0]):
     x = sounds[i]
-    x = signal.decimate(x, decimate_factor)
+    x = decimate(x, decimate_factor)
 
     x_win = windower(x, M, N)
     x_hamm = x_win * W
