@@ -65,7 +65,7 @@ class RandomCrop(object):
         iw = image.shape[0] + self.padding[0]
         ih = image.shape[1] + self.padding[1]
 
-        image_tmp = np.zeros((iw, ih, ch))
+        image_tmp = np.zeros((iw, ih, ch), dtype=np.float32)
         image_tmp[self.padding[0]:image.shape[0] + self.padding[0],
         self.padding[1]:image.shape[1] + self.padding[1], :] = image;
 

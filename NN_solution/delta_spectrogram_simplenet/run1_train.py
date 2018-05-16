@@ -32,8 +32,9 @@ cprint('c', '\nData:')
 
 # load data
 Tn = np.load('../data/whale_trainlabels.npy')
-ready_data = np.load('../data/whale_trainlabels.npy')
-
+ready_data = np.load('../data/processed_data.npy')
+print(ready_data.shape)
+print(ready_data.dtype)
 # Randomize
 shuffle_in_unison_scary(ready_data, Tn)
 
@@ -92,7 +93,6 @@ for i in range(epoch, nb_epochs):
     nb_samples = 0
 
     for x, y in trainloader:
-
         cost, err = net.fit(x, y)
 
         err_train[i] += err
@@ -113,6 +113,7 @@ for i in range(epoch, nb_epochs):
         net.set_mode_train(False)
         nb_samples = 0
         for j, (x, y) in enumerate(testloader):
+
             cost, err = net.eval(x, y)
 
             cost_dev[i] += cost
