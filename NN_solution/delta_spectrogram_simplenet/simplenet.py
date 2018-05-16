@@ -38,7 +38,7 @@ class simplenet(nn.Module):
 
                              #
                              nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2), dilation=(1, 1), ceil_mode=False),
-                             nn.Dropout2d(p=0.1),
+                             nn.Dropout2d(p=0.2),
 
 
                              nn.Conv2d(128, 128, kernel_size=[3, 3], stride=(1, 1), padding=(1, 1)),
@@ -53,7 +53,7 @@ class simplenet(nn.Module):
 
                              #
                              nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2), dilation=(1, 1), ceil_mode=False),
-                             nn.Dropout2d(p=0.1),
+                             nn.Dropout2d(p=0.2),
 
 
                              nn.Conv2d(256, 256, kernel_size=[3, 3], stride=(1, 1), padding=(1, 1)),
@@ -68,7 +68,7 @@ class simplenet(nn.Module):
 
                              #
                              nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2), dilation=(1, 1), ceil_mode=False),
-                             nn.Dropout2d(p=0.1),
+                             nn.Dropout2d(p=0.2),
 
 
 
@@ -79,7 +79,7 @@ class simplenet(nn.Module):
 
                              #
                              nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2), dilation=(1, 1), ceil_mode=False),
-                             nn.Dropout2d(p=0.1),
+                             nn.Dropout2d(p=0.2),
 
 
                              nn.Conv2d(256, 256, kernel_size=[3, 3], stride=(1, 1), padding=(1, 1)),
@@ -88,7 +88,7 @@ class simplenet(nn.Module):
 
                              #
                              nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2), dilation=(1, 1), ceil_mode=False),
-                             nn.Dropout2d(p=0.1),
+                             nn.Dropout2d(p=0.2),
 
 
                              nn.Conv2d(256, 256, kernel_size=[3, 3], stride=(1, 1), padding=(1, 1)),
