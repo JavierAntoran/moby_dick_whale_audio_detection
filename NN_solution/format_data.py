@@ -12,8 +12,8 @@ def windower(x, M, N):
     X   = x[ind.astype(int)]
     return X.transpose()
 
-labels = np.load('whale_trainlabels.npy')
-sounds = np.load('whale_traindata.npy')
+labels = np.load('data/whale_trainlabels.npy')
+sounds = np.load('data/whale_traindata.npy')
 
 filter1 = np.array([-1.0000, -0.7500, -0.5000, -0.2500, 0, 0.2500, 0.5000, 0.7500, 1.0000])
 filter2 = np.array([1.0000, 0.2500, -0.2857, -0.6071, -0.7143, -0.6071, -0.2857, 0.2500, 1.0000])
@@ -81,4 +81,4 @@ print(ready_data.dtype)
 ready_data = ready_data.astype(np.float32)
 print(ready_data.dtype)
 
-np.save('processed_data.npy', ready_data)
+np.save('data/processed_data.npy', ready_data)
