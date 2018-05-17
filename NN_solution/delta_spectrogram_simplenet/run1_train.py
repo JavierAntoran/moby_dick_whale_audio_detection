@@ -18,7 +18,7 @@ mkdir('results')
 # train config
 
 batch_size = 64
-nb_epochs = 20
+nb_epochs = 35
 log_interval = 1
 
 # ------------------------------------------------------------------------------------------------------
@@ -104,6 +104,7 @@ best_cost = np.inf
 roc_probs = np.zeros(x_dev.shape[0])
 roc_targets = np.zeros(x_dev.shape[0])
 auc = np.zeros(nb_epochs)
+best_auc = 0
 
 nb_its_dev = 1
 
@@ -153,9 +154,25 @@ for i in range(epoch, nb_epochs):
 
         cprint('g', '    Jdev = %f, err = %f\n' % (cost_dev[i], err_dev[i]))
         cprint('g', '    auc = %f\n' % (auc[i]))
-        if cost_dev[i] < best_cost:
+
+        if auc[i] > best_auc:
             best_cost = cost_dev[i]
+            best_auc = auc[i]
             net.save('models/theta_best.dat')
+            # SAVE ROC CURVE
+            plt.figure()
+            lw = 1.2
+            plt.plot(fpr, tpr, color='C0',
+                     lw=lw, label='ROC curve (area = %0.3f)' % auc[i])
+            plt.plot([0, 1], [0, 1], color='C2', lw=lw, linestyle='--')
+            plt.xlim([0.0, 1.0])
+            plt.ylim([0.0, 1.0])
+            plt.xlabel('False Positive Rate')
+            plt.ylabel('True Positive Rate')
+            plt.title(' Best Receiver Operating Characteristic')
+            plt.legend(loc="lower right")
+            plt.savefig('results/best_ROC.png')
+
 
     net.save('models/theta_last.dat')
     save_obj([cost_train, cost_dev, err_train, err_dev, best_cost], 'models/cost.dat')
@@ -171,9 +188,11 @@ nb_parameters = net.get_nb_parameters()
 best_cost_dev = np.min(cost_dev)
 best_cost_train = np.min(cost_train)
 err_dev_min = err_dev[::nb_its_dev].min()
+max_auc_dev = np.max(auc)
 
 print('  cost_dev: %f (cost_train %f)' % (best_cost_dev, best_cost_train))
 print('  err_dev: %f' % (err_dev_min))
+print('  max_auc_dev: %f' % (max_auc_dev))
 print('  nb_parameters: %d (%s)' % (nb_parameters, humansize(nb_parameters)))
 print('  time_per_it: %fs\n' % (runtime_per_it))
 
@@ -209,3 +228,16 @@ plt.legend(['dev error', 'train error'])
 
 # plt.show(block=False)
 plt.savefig('results/err.png')
+
+plt.figure()
+fig2, ax2 = plt.subplots()
+ax2.set_ylabel('AUC')
+ax2.semilogy(range(0, nb_epochs, nb_its_dev), 100 * auc[::nb_its_dev], 'b-')
+plt.xlabel('epoch')
+plt.grid(b=True, which='major', color='k', linestyle='-')
+plt.grid(b=True, which='minor', color='k', linestyle='--')
+ax2.get_yaxis().set_minor_formatter(matplotlib.ticker.ScalarFormatter())
+ax2.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+# plt.legend(['dev auc'])
+
+plt.savefig('results/auc.png')
