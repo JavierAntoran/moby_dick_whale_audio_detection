@@ -149,7 +149,7 @@ for i in range(epoch, nb_epochs):
 
         fpr, tpr, threshold = metrics.roc_curve(roc_targets, roc_probs)
         roc_auc = metrics.auc(fpr, tpr)
-        auc[i] = auc
+        auc[i] = roc_auc
 
         cprint('g', '    Jdev = %f, err = %f\n' % (cost_dev[i], err_dev[i]))
         cprint('g', '    auc = %f\n' % (auc[i]))

@@ -98,7 +98,7 @@ class Net(BaseNet):
 
         loss = F.cross_entropy(out, y, size_average=True)
 
-        probs = F.softmax(out.data, dim=1)[:, 1].cpu()
+        probs = F.softmax(out, dim=1)[:, 1].data.cpu()
 
         pred = out.data.max(dim=1, keepdim=False)[1]  # get the index of the max log-probability
         err = pred.ne(y.data).sum()
