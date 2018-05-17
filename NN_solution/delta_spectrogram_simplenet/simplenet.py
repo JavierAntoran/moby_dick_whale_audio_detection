@@ -13,7 +13,7 @@ class simplenet(nn.Module):
     def forward(self, x):
         #print(x.size())
         out = self.features(x)
-
+        # print(out.shape)
         #Global Max Pooling
         out = F.max_pool2d(out, kernel_size=out.size()[2:])
         out = F.dropout2d(out, 0.1, training=True)

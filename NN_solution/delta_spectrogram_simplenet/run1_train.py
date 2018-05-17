@@ -33,25 +33,45 @@ cprint('c', '\nData:')
 # load data
 Tn = np.load('../data/whale_trainlabels.npy')
 ready_data = np.load('../data/processed_data.npy')
+
+# debug
+# Nim = 6
+# print(Tn[Nim])
+# plt.figure()
+# plt.imshow(ready_data[Nim,:,:,0])
+# plt.savefig('results/im0.png')
+# plt.figure()
+# plt.imshow(ready_data[Nim,:,:,1])
+# plt.savefig('results/im1.png')
+# plt.figure()
+# plt.imshow(ready_data[Nim,:,:,2])
+# plt.savefig('results/im2.png')
+#
+
 print(ready_data.shape)
 print(ready_data.dtype)
 # Randomize
+np.random.seed(seed=None)
+
 # shuffle_in_unison_scary(ready_data, Tn)
 
 # train test split
-cutoff = np.round(ready_data.shape[0] * 0.9).astype(int)
-x_train = ready_data[0:cutoff]
-t_train = Tn[0:cutoff]
+cutoff = np.round(ready_data.shape[0] * 0.1).astype(int)
+x_train = ready_data[cutoff:]
+t_train = Tn[cutoff:]
+print('+train = %d' % np.sum(t_train))
 
-x_dev = ready_data[cutoff:]
-t_dev = Tn[cutoff:]
+x_dev = ready_data[:cutoff]
+t_dev = Tn[:cutoff]
+print('+t_dev = %d' % np.sum(t_dev))
 
 transform_train = transforms.Compose([
-    RandomCrop((160, 32), padding=(0, 0), pad_if_needed=False),
+    RandomCrop((192, 32), padding=(0, 0), pad_if_needed=False),
     transforms.ToTensor()
 ])
 
 transform_test = transforms.Compose([
+    # RandomCrop((192, 32), padding=(0, 0), pad_if_needed=False),
     transforms.ToTensor()
 ])
 
@@ -148,7 +168,7 @@ print('  err_dev: %f' % (err_dev_min))
 print('  nb_parameters: %d (%s)' % (nb_parameters, humansize(nb_parameters)))
 print('  time_per_it: %fs\n' % (runtime_per_it))
 
-with open('results.txt', 'w') as f:
+with open('results/results.txt', 'w') as f:
     f.write(
         '%f %f %d %s %f\n' % (best_cost_dev, best_cost_train, nb_parameters, humansize(nb_parameters), runtime_per_it))
 
