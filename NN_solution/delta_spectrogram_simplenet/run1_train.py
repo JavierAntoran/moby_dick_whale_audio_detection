@@ -2,10 +2,8 @@ from __future__ import print_function
 from __future__ import division
 import torch, time
 import torch.utils.data
-from torch import nn, optim
-from torch.autograd import Variable
-from torch.nn import functional as F
-from torchvision import datasets, transforms
+from torchvision import transforms
+from sklearn import metrics
 from src.datafeed import *
 from model import *
 
@@ -103,6 +101,10 @@ err_train = np.zeros(nb_epochs)
 err_dev = np.zeros(nb_epochs)
 best_cost = np.inf
 
+roc_probs = np.zeros(x_dev.shape[0])
+roc_targets = np.zeros(x_dev.shape[0])
+auc = np.zeros(nb_epochs)
+
 nb_its_dev = 1
 
 tic0 = time.time()
@@ -134,7 +136,9 @@ for i in range(epoch, nb_epochs):
         nb_samples = 0
         for j, (x, y) in enumerate(testloader):
 
-            cost, err = net.eval(x, y)
+            cost, err, probs = net.eval(x, y)
+            roc_targets[nb_samples:nb_samples+len(x)] = y.numpy()
+            roc_probs[nb_samples:nb_samples+len(x)] = probs.numpy()
 
             cost_dev[i] += cost
             err_dev[i] += err
@@ -143,7 +147,12 @@ for i in range(epoch, nb_epochs):
         cost_dev[i] /= nb_samples
         err_dev[i] /= nb_samples
 
+        fpr, tpr, threshold = metrics.roc_curve(roc_targets, roc_probs)
+        roc_auc = metrics.auc(fpr, tpr)
+        auc[i] = auc
+
         cprint('g', '    Jdev = %f, err = %f\n' % (cost_dev[i], err_dev[i]))
+        cprint('g', '    auc = %f\n' % (auc[i]))
         if cost_dev[i] < best_cost:
             best_cost = cost_dev[i]
             net.save('models/theta_best.dat')
