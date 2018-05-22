@@ -3,7 +3,7 @@ clc
 close all
 clear all
 %
-Nsample = 9;
+Nsample = 13;
 
 audiofilename = sprintf('../whale_data/train/train%d.aiff', Nsample);
 
@@ -19,9 +19,9 @@ pos_labels = find(labels == 1);
 label = labels(Nsample);
 
 fprintf('sample %d, label %d\n', Nsample, label)
-%%
+%
 
-soundsc(x,Fs)
+% soundsc(x,Fs)
 
 NFFT = 128;
 
