@@ -49,7 +49,7 @@ t_best_tpr = []
 
 for n_run in range(Nparts):
 
-    x_train, x_dev, t_train, t_dev = gen_crossval_split(ready_data, Tn, n_run, Nparts, shuffle=False)
+    x_train, t_train, x_dev, t_dev = gen_crossval_split(ready_data, Tn, n_run, Nparts, shuffle=False)
     fpr_tpr_set = False
 
     print('+train = %d' % np.sum(t_train))
