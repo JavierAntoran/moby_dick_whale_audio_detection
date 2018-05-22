@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 from scipy.signal import decimate
 
@@ -11,6 +12,30 @@ def windower(x, M, N):
     ind = np.expand_dims(np.arange(0, N), axis=1) * np.ones((1,L)) + np.ones((N,1)) * m
     X   = x[ind.astype(int)]
     return X.transpose()
+
+
+def gen_whalefb_mtx(NFFT, nfilt, sample_rate):
+    low_freq_mel = 40
+
+    high_freq_mel = (2595 * np.log10(1 + (sample_rate / 2) / 700))  # Convert Hz to Mel
+    mel_points = np.linspace(low_freq_mel, high_freq_mel, nfilt + 2)  # Equally spaced in Mel scale
+
+    hz_points = (700 * (10 ** (mel_points / 2595) - 1))  # Convert Mel to Hz
+    bin = np.floor((NFFT + 1) * hz_points / sample_rate)
+
+    fbank = np.zeros((nfilt, int(np.floor(NFFT / 2 + 1))))
+
+    for m in range(1, nfilt + 1):
+        f_m_minus = int(bin[m - 1])  # left
+        f_m = int(bin[m])  # center
+        f_m_plus = int(bin[m + 1])  # right
+
+        for k in range(f_m_minus, f_m):
+            fbank[m - 1, k] = (k - bin[m - 1]) / (bin[m] - bin[m - 1])
+        for k in range(f_m, f_m_plus):
+            fbank[m - 1, k] = (bin[m + 1] - k) / (bin[m + 1] - bin[m])
+
+    return fbank
 
 labels = np.load('data/whale_trainlabels.npy')
 sounds = np.load('data/whale_traindata.npy')
@@ -52,14 +77,16 @@ def get_delta_mtx(the_filter, Nwin):
 decimate_factor = 2
 fs = 2000 / decimate_factor
 
-NFFT = 64
+NFFT = 256
 
-N = int(fs * 0.025)
-M = int(fs * 0.01)
+wfb = gen_whalefb_mtx(NFFT, nfilt=32, sample_rate=fs)
+
+N = int(fs * 0.25)
+M = int(fs * 0.011)
 
 W = np.expand_dims(np.hamming(N), axis=0)
 
-ready_data = np.zeros((sounds.shape[0], 198, int(NFFT / 2), 3))
+ready_data = np.zeros((sounds.shape[0], 160, 32, 3))
 
 for i in range(sounds.shape[0]):
     x = sounds[i]
@@ -69,7 +96,8 @@ for i in range(sounds.shape[0]):
     x_hamm = x_win * W
 
     s = np.abs(np.fft.rfft(x_win, n=NFFT, axis=1))
-    s = s[:, 1:]  # eliminate DC
+    # s = s[:, 1:]  # eliminate DC
+    s = np.matmul(s, wfb.T)
 
     s_augment = get_mtx_deltas(s, filter1, filter2)
     #     s_augment = np.rollaxis(s_augment, 2, 0)
@@ -81,4 +109,4 @@ print(ready_data.dtype)
 # ready_data = ready_data.astype(np.float32)
 print(ready_data.dtype)
 
-np.save('data/processed_data.npy', ready_data)
+np.save('data/processed_data_250ms.npy', ready_data)
