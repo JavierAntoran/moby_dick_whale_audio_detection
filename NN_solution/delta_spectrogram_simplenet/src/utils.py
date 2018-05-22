@@ -201,3 +201,17 @@ def shuffle_in_unison_scary(a, b):
     np.random.shuffle(a)
     np.random.set_state(rng_state)
     np.random.shuffle(b)
+
+
+def gen_crossval_split(data, labels, Npart, Nparts, shuffle=False):
+    ndat = int(data.shape[0] / Nparts)
+    assert ndat * Nparts == data.shape[0]
+
+    i = Npart
+    d0 = data[:ndat * (i)]
+    d1 = data[ndat * (i + 1):]
+    l0 = labels[:ndat * (i)]
+    l1 = labels[ndat * (i + 1):]
+
+    return np.concatenate((d0, d1), axis=0), np.concatenate((l0, l1)), data[ndat * (i):ndat * (i + 1)], labels[ndat * (
+        i):ndat * (i + 1)]

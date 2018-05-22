@@ -149,6 +149,8 @@ for i in range(epoch, nb_epochs):
         err_dev[i] /= nb_samples
 
         fpr, tpr, threshold = metrics.roc_curve(roc_targets, roc_probs)
+        print(tpr.shape)
+        print(fpr.shape)
         roc_auc = metrics.auc(fpr, tpr)
         auc[i] = roc_auc
 
