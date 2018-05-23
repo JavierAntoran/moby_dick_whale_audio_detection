@@ -32,6 +32,7 @@ cprint('c', '\nData:')
 Tn = np.load('../data/whale_trainlabels.npy')
 ready_data = np.load('../data/processed_data_250ms.npy')
 
+shuffle_in_unison(ready_data, Tn)
 
 print(ready_data.shape)
 print(ready_data.dtype)

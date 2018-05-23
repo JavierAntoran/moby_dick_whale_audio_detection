@@ -196,11 +196,14 @@ def windower(x, M, N):
     X   = x[ind.astype(int)]
     return X.transpose()
 
-def shuffle_in_unison_scary(a, b):
+def shuffle_in_unison(a, b, c=None):
     rng_state = np.random.get_state()
     np.random.shuffle(a)
     np.random.set_state(rng_state)
     np.random.shuffle(b)
+    if c is not None:
+        np.random.set_state(rng_state)
+        np.random.shuffle(c)
 
 
 def gen_crossval_split(data, labels, Npart, Nparts, shuffle=False):
@@ -213,5 +216,5 @@ def gen_crossval_split(data, labels, Npart, Nparts, shuffle=False):
     l0 = labels[:ndat * (i)]
     l1 = labels[ndat * (i + 1):]
 
-    return np.concatenate((d0, d1), axis=0), np.concatenate((l0, l1)), data[ndat * (i):ndat * (i + 1)], labels[ndat * (
+    return np.concatenate((d0, d1), axis=0), np.concatenate((l0, l1)), data[ndat *(i):ndat * (i + 1)], labels[ndat * (
         i):ndat * (i + 1)]
