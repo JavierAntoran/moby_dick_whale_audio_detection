@@ -30,7 +30,7 @@ cprint('c', '\nData:')
 
 # load data
 Tn = np.load('../data/whale_trainlabels.npy')
-ready_data = np.load('../data/processed_data.npy')
+ready_data = np.load('../data/processed_data_250ms.npy')
 
 
 print(ready_data.shape)
@@ -56,7 +56,7 @@ for n_run in range(Nparts):
     print('+t_dev = %d' % np.sum(t_dev))
 
     transform_train = transforms.Compose([
-        RandomCrop((192, 32), padding=(0, 0), pad_if_needed=False),
+        # RandomCrop((192, 32), padding=(0, 0), pad_if_needed=False),
         transforms.ToTensor()
     ])
 
@@ -159,6 +159,7 @@ for n_run in range(Nparts):
                 if not fpr_tpr_set:
                     t_best_fpr.append(fpr)
                     t_best_tpr.append(tpr)
+                    fpr_tpr_set = True
                 else:
                     t_best_fpr[n_run] = fpr
                     t_best_tpr[n_run] = tpr
