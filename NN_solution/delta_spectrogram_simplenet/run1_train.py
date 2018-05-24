@@ -173,7 +173,7 @@ for i in range(epoch, nb_epochs):
             plt.ylabel('True Positive Rate')
             plt.title(' Best Receiver Operating Characteristic')
             plt.legend(loc="lower right")
-            plt.savefig('results/best_ROC.png')
+            plt.savefig('results/best_ROC_shuffle.png')
 
 
     net.save('models/theta_last.dat')
