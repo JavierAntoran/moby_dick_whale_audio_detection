@@ -3,9 +3,11 @@ clc
 close all
 clear all
 %
-Nsample = 13;
+Nsample = 6;
 
-audiofilename = sprintf('../whale_data/train/train%d.aiff', Nsample);
+%audiofilename = sprintf('../whale_data/train/train%d.aiff', Nsample);
+audiofilename = sprintf('../../whale_data/right_whale/train%d.aiff', Nsample);
+%audiofilename = sprintf('../../whale_data/no_right_whale/train%d.aiff', Nsample);
 
 [x,Fs] = audioread(audiofilename);
 
@@ -13,15 +15,15 @@ downsample_factor = 2; % go to 1kHz
 x = downsample(x, downsample_factor);
 Fs = Fs/downsample_factor;
 
-csvfile = '../whale_data/train.csv';
-labels = csvread(csvfile, 1, 1);
-pos_labels = find(labels == 1);
-label = labels(Nsample);
+% csvfile = '../whale_data/train.csv';
+% labels = csvread(csvfile, 1, 1);
+% pos_labels = find(labels == 1);
+% label = labels(Nsample);
 
-fprintf('sample %d, label %d\n', Nsample, label)
-%
+% fprintf('sample %d, label %d\n', Nsample, label)
+%%
 
-% soundsc(x,Fs)
+soundsc(x,Fs)
 
 NFFT = 128;
 
