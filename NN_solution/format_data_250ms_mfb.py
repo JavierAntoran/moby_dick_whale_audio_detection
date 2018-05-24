@@ -95,7 +95,7 @@ for i in range(sounds.shape[0]):
     x_win = windower(x, M, N)
     x_hamm = x_win * W
 
-    s = np.abs(np.fft.rfft(x_win, n=NFFT, axis=1))
+    s = np.abs(np.fft.rfft(x_hamm, n=NFFT, axis=1))
     # s = s[:, 1:]  # eliminate DC
     s = np.matmul(s, wfb.T)
 
