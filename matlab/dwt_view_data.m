@@ -3,7 +3,7 @@ clc
 close all
 clear all
 %
-Nsample = 7;
+Nsample = 13;
 
 audiofilename = sprintf('../whale_data/train/train%d.aiff', Nsample);
 
@@ -23,8 +23,8 @@ fprintf('sample %d, label %d\n', Nsample, label)
 
 %% Stationary SWT
 close all
-level = 2;
-wtype = 'db2';
+level = 3;
+wtype = 'sym8';
 [swa,swd] = swt(x, level, wtype);
 
 %% stationary time signals
@@ -112,7 +112,7 @@ wtype = 'db2';
 
 [c, l] = wavedec(x, levels, wtype);
 
-getlevel = 2;
+getlevel = 3;
 
 dwa = appcoef(c, l, wtype, getlevel);
 dwd = detcoef(c, l, getlevel);
