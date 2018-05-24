@@ -73,7 +73,7 @@ class simplenet(nn.Module):
                              nn.ReLU(inplace=True),
 
                              nn.Conv2d(256, 256, kernel_size=[3, 3], stride=(1, 1), padding=(1, 1)),
-                             nn.BatchNorm2d(128, eps=1e-05, momentum=0.05, affine=True),
+                             nn.BatchNorm2d(256, eps=1e-05, momentum=0.05, affine=True),
                              nn.ReLU(inplace=True),
 
 
