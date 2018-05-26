@@ -17,14 +17,17 @@ data_std = np.std(data, axis=2, keepdims=True)
 data /= data_std
 
 Q = 10  # N states
-
 G = np.empty((Q), dtype=object)
 for q in range(Q):
     G[q] = gmm_EM(nb_clust=3, dim=30, centers=None, covars=None, weights=None)
 
 hmm = HMM(Q, G, p0=None, debug=False)
 
-data_use = data
-hmm.train([a for a in data_use[:100]], iterations=10, N_only_gmm=2)
 
-hmm.save('my_hmm_model')
+hmm.load('my_hmm_model')
+
+print(hmm.A)
+print(hmm.G[0].weights)
+# data_use = data
+# hmm.train([a for a in data_use[:100]], iterations=10, N_only_gmm=2)
+
