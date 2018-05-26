@@ -30,7 +30,7 @@ cprint('c', '\nData:')
 
 # load data
 Tn = np.load('../data/whale_trainlabels.npy')
-ready_data = np.load('../data/processed_data_250ms.npy')
+ready_data = np.load('../data/processed_data.npy')
 
 shuffle_in_unison(ready_data, Tn)
 
@@ -57,7 +57,7 @@ for n_run in range(Nparts):
     print('+t_dev = %d' % np.sum(t_dev))
 
     transform_train = transforms.Compose([
-        # RandomCrop((192, 32), padding=(0, 0), pad_if_needed=False),
+        RandomCrop((192, 32), padding=(0, 0), pad_if_needed=False),
         transforms.ToTensor()
     ])
 
@@ -205,7 +205,7 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title(' Best Receiver Operating Characteristic')
 plt.legend(loc="lower right")
-plt.savefig('results/best_ROC_shuffle.png')
+plt.savefig('results/best_ROC_smallwindow.png')
 
 print('% dev errors:', t_best_err)
 print('% dev loss:', t_best_loss)
