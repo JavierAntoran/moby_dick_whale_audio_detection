@@ -4,7 +4,7 @@ from GMM import gmm_EM
 import cPickle
 import time
 import matplotlib
-# matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 # from IPython.core.display import HTML, clear_output
 
@@ -120,7 +120,6 @@ class HMM(object):
                         plt.xlabel('TARGET')
                         plt.ylabel('SOURCE')
                         plt.title('HiddenMeMe viterbi')
-                        plt.show()
 
                 else:
                     trace = self.generate_random_uniform_trace()
@@ -135,7 +134,6 @@ class HMM(object):
                         plt.xlabel('TARGET')
                         plt.ylabel('SOURCE')
                         plt.title('HiddenMeMe generated trace')
-                        plt.show()
 
                 kk += 1
                 traces.append(trace)
