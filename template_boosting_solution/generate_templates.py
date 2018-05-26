@@ -12,7 +12,6 @@ height = np.arange(1, 76, 5)  # 3.9Hz per coefficient 0 to 1111ms lengths
 
 print('len length', len(length))
 print('len height', len(height))
-from xgboost import XGBClassifier
 print('total N templates' ,len(length)*len(height))
 
 templates = []
