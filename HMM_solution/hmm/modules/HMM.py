@@ -92,15 +92,17 @@ class HMM(object):
             kk = 0
             traces = []
 
-            print('Starting Iteracion %d of %d' % (i, iterations))
+            print('Starting Iteration %d of %d' % (i, iterations))
             tic0 = time.time()
 
             for x in train_seq:
 
                 self.T = x.shape[0]
 
+                assert self.T >= self.Q
+
                 if kk % 100 == 0:
-                    print('series %d of %d in Iteracion %d of %d' % (kk, len(train_seq), i, iterations))
+                    print('series %d of %d in Iteration %d of %d' % (kk, len(train_seq), i, iterations))
                     plt.close('all')
                     plt.clf()
                     #  clear_output()
