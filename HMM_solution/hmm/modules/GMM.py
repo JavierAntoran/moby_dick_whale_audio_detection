@@ -9,7 +9,7 @@ class gmm_EM:
         self.nb_clust = nb_clust
         self.dim = dim
 
-        self.covar_eps = 1e-2
+        self.covar_eps = 1e-4
 
         #         torch.manual_seed(0)
 
