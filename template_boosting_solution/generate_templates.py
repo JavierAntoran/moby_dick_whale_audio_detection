@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 from skimage.draw import line, polygon
+import time
 from skimage.feature import hog
 
 # Asume 160 x 128 image
@@ -31,11 +32,13 @@ for h in height:
         templates.append(tm)
 
 
-# Ntemplate = 50
+# Ntemplate = 200
 
 # plt.figure()
 # plt.imshow(templates[Ntemplate].T)
 # plt.gca().invert_yaxis()
+# plt.title('Template %d' % Ntemplate)
+# plt.savefig('Template_%d.png' % Ntemplate)
 # plt.show()
 
 spectograms = np.load('data/processed_data_spectrum_250.npy')
@@ -44,25 +47,39 @@ spectograms = np.load('data/processed_data_spectrum_250.npy')
 spectograms -= spectograms.mean(axis=(1,2), keepdims=True)
 spectograms /= spectograms.std(axis=(1,2), keepdims=True)
 
+
+print('spectograms loaded and normalized, shape:', spectograms.shape)
 # spec = spectograms[7]
+# xcorr = signal.correlate2d(spec, templates[Ntemplate], mode='full', boundary='fill', fillvalue=0)
+#
+# plt.figure()
+# plt.imshow(xcorr.T)
+# plt.gca().invert_yaxis()
+# plt.title('Cross correlation of spectogram with template %d' % Ntemplate)
+# plt.savefig('xcorr_%d.png' % Ntemplate)
+# plt.show()
+
+
 
 features = np.zeros((spectograms.shape[0], len(templates), 3))
 
 for i in range(spectograms.shape[0]):
+    tic0 = time.time()
     for temp_idx in range(len(templates)):
+
+        # print('template %d of %d for spectrogram %d of %d' % (temp_idx, len(templates), i, spectograms.shape[0]))
 
         spec = spectograms[i]
         xcorr = signal.correlate2d(spec, templates[temp_idx], mode='full', boundary='fill', fillvalue=0)
-        # plt.figure()
-        # plt.imshow(xcorr.T)
-        # plt.gca().invert_yaxis()
-        # plt.show()
+
         xcorr_max = xcorr.max()
         xcorr_mean = xcorr.mean()
         xcorr_sdt = xcorr.std()
 
         features[i, temp_idx, :] = np.array([xcorr_max, xcorr_mean, xcorr_sdt])
 
+    tic1 = time.time()
+    print('finished spectogram %d of %d. Ellapsed time: %d s' % (i, spectograms.shape[0], tic1-tic0))
 # out = hog(xcorr, block_norm='L2-Hys')
 
 print(features.shape)
