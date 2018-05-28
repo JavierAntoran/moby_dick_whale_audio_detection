@@ -25,14 +25,14 @@ data_pos /= data_std
 data_neg -= data_mean
 data_neg /= data_std
 
-Q = 6  # N states
+Q = 15  # N states
 
 G = np.empty((Q), dtype=object)
 for q in range(Q):
     G[q] = gmm_EM(nb_clust=2, dim=30, centers=None, covars=None, weights=None)
 
 hmm_pos = HMM(Q, G, p0=None, debug=False)
-hmm_pos.train([a for a in data_pos], iterations=15, N_only_gmm=1)
+hmm_pos.train([a for a in data_pos], iterations=20, N_only_gmm=2)
 hmm_pos.save('hmm_pos')
 
 
@@ -42,5 +42,5 @@ for q in range(Q):
     G[q] = gmm_EM(nb_clust=2, dim=30, centers=None, covars=None, weights=None)
 
 hmm_neg = HMM(Q, G, p0=None, debug=False)
-hmm_neg.train([a for a in data_neg], iterations=15, N_only_gmm=1)
+hmm_neg.train([a for a in data_neg], iterations=20, N_only_gmm=2)
 hmm_neg.save('hmm_neg')
