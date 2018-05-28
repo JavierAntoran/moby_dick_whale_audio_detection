@@ -51,7 +51,8 @@ pos_log_like = np.zeros(len(data))
 neg_log_like = np.zeros(len(data))
 p = np.zeros((len(data), 2))
 
-for i, d in enumerate(data[:200]):
+for i, d in enumerate(data):
+    print('running pass %d of %d' % (i, len(data)))
     pos_trace_, pos_log_like[i] = hmm_pos.eval(d)
     neg_trace_, neg_log_like[i] = hmm_neg.eval(d)
     pos_trace.append(pos_trace_)
@@ -72,8 +73,8 @@ p = softmax(out_loglikes, dim=1)
 
 p = p[:, 0]
 
-# print(labels[:100])
-# print(p[:100])
+# print(labels)
+# print(p)
 #
 # print(pos_log_like[:100])
 # print(neg_log_like[:100])

@@ -116,7 +116,7 @@ def get_wfb_swt_dct(x):
 
         a_mfb = a_mfb[:, mfb_starts[i]:mfb_ends[i]]
 
-        a_mfb = dct(a_mfb, type=2, axis=1, norm='ortho')[:, 1: (num_cepst[i] + 1)]
+        a_mfb = dct(a_mfb, type=2, axis=1, norm='ortho')[:, 0:num_cepst[i]]
 
         if i == 0:
             out = a_mfb
