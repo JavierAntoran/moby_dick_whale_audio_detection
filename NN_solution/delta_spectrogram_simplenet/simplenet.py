@@ -7,9 +7,9 @@ class simplenet(nn.Module):
     def __init__(self, classes=10, channels_in=3):
         super(simplenet, self).__init__()
         #print(simpnet_name)
+        self.channels_in = channels_in
         self.features = self._make_layers()
         self.classifier = nn.Linear(256, classes)
-        self.channels_in = channels_in
 
     def forward(self, x):
         #print(x.size())
