@@ -114,11 +114,11 @@ def get_wfb_swt_dct(x):
         sa = np.abs(np.fft.rfft(a_hamm, n=NFFT, axis=1))
         a_mfb = np.matmul(sa, mfb.T)
 
-        a_mfb = a_mfb[:, mfb_starts[i]:mfb_ends[i]]
+        a_mfb = a_mfb[:, mfb_starts[i-1]:mfb_ends[i-1]]
 
-        a_mfb = dct(a_mfb, type=2, axis=1, norm='ortho')[:, 0:num_cepst[i]]
+        a_mfb = dct(a_mfb, type=2, axis=1, norm='ortho')[:, 0:num_cepst[i-1]]
 
-        if i == 0:
+        if i == 1:
             out = a_mfb
         else:
             out = np.concatenate((out, a_mfb), axis=1)
