@@ -127,7 +127,7 @@ def get_wfb_swt_dct(x):
 
 #####################
 
-ready_data = np.zeros((sounds.shape[0], 160, 30))  #sum(num_cepst)=30
+ready_data = np.zeros((sounds.shape[0], 160, 32))  #sum(num_cepst)=30
 
 for i in range(sounds.shape[0]):
     x = sounds[i]
