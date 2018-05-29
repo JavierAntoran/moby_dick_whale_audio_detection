@@ -4,11 +4,12 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 
 class simplenet(nn.Module):
-    def __init__(self, classes=10):
+    def __init__(self, classes=10, channels_in=3):
         super(simplenet, self).__init__()
         #print(simpnet_name)
         self.features = self._make_layers()
         self.classifier = nn.Linear(256, classes)
+        self.channels_in = channels_in
 
     def forward(self, x):
         #print(x.size())
@@ -24,7 +25,7 @@ class simplenet(nn.Module):
     def _make_layers(self):
 
         model = nn.Sequential(
-                             nn.Conv2d(3, 64, kernel_size=[3, 3], stride=(1, 1), padding=(1, 1)),
+                             nn.Conv2d(self.channels_in, 64, kernel_size=[3, 3], stride=(1, 1), padding=(1, 1)),
                              nn.BatchNorm2d(64, eps=1e-05, momentum=0.05, affine=True),
                              nn.ReLU(inplace=True),
 

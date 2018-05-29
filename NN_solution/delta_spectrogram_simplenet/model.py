@@ -46,7 +46,7 @@ class BaseNet(object):
 class Net(BaseNet):
     eps = 1e-6
 
-    def __init__(self, lr=1e-3, cuda=True):
+    def __init__(self, lr=1e-3, channels_in=3, cuda=True):
         super(Net, self).__init__()
         cprint('y', ' simplenet ')
         self.lr = lr
@@ -54,13 +54,14 @@ class Net(BaseNet):
         self.cuda = cuda
         self.create_net()
         self.create_opt()
+        self.channels_in = channels_in
         self.epoch = 0
 
     def create_net(self):
         torch.manual_seed(42)
         torch.cuda.manual_seed(42)
 
-        self.model = simplenet(classes=2)
+        self.model = simplenet(classes=2, channels_in=self.channels_in)
         if self.cuda:
             self.model.cuda()
             cudnn.benchmark = True
