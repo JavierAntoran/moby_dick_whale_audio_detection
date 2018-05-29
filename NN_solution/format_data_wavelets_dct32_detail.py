@@ -139,4 +139,4 @@ print(ready_data.dtype)
 # ready_data = ready_data.astype(np.float32)
 print(ready_data.dtype)
 
-np.save('data/processed_data_swt_dct32.npy', ready_data)
+np.save('data/processed_data_swt_dct32_details.npy', ready_data)
