@@ -29,7 +29,7 @@ Q = 15  # N states
 
 G = np.empty((Q), dtype=object)
 for q in range(Q):
-    G[q] = gmm_EM(nb_clust=2, dim=30, centers=None, covars=None, weights=None)
+    G[q] = gmm_EM(nb_clust=3, dim=30, centers=None, covars=None, weights=None)
 
 hmm_pos = HMM(Q, G, p0=None, debug=False)
 hmm_pos.train([a for a in data_pos], iterations=20, N_only_gmm=2)
@@ -39,7 +39,7 @@ hmm_pos.save('hmm_pos')
 
 G = np.empty((Q), dtype=object)
 for q in range(Q):
-    G[q] = gmm_EM(nb_clust=2, dim=30, centers=None, covars=None, weights=None)
+    G[q] = gmm_EM(nb_clust=3, dim=30, centers=None, covars=None, weights=None)
 
 hmm_neg = HMM(Q, G, p0=None, debug=False)
 hmm_neg.train([a for a in data_neg], iterations=20, N_only_gmm=2)
