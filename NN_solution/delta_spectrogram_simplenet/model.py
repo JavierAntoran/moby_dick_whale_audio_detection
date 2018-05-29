@@ -52,9 +52,9 @@ class Net(BaseNet):
         self.lr = lr
         self.schedule = None  # [] #[50,200,400,600]
         self.cuda = cuda
+        self.channels_in = channels_in
         self.create_net()
         self.create_opt()
-        self.channels_in = channels_in
         self.epoch = 0
 
     def create_net(self):
