@@ -35,8 +35,6 @@ hmm_pos = HMM(Q, G, p0=None, debug=False)
 hmm_pos.train([a for a in data_pos], iterations=20, N_only_gmm=2)
 hmm_pos.save('hmm_pos')
 
-
-
 G = np.empty((Q), dtype=object)
 for q in range(Q):
     G[q] = gmm_EM(nb_clust=4, dim=30, centers=None, covars=None, weights=None)

@@ -159,7 +159,6 @@ class HMM(object):
             trace[ii + 1] = np.argmax(np.random.multinomial(1, A1[int(trace[ii]), :], size=1))
         return trace
 
-
     def eval(self, x):
         self.T = x.shape[0]
         self.set_likelihood_mtx(x)
