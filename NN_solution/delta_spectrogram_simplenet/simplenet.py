@@ -99,3 +99,18 @@ class simplenet(nn.Module):
             nn.init.xavier_uniform_(m.weight.data, gain=nn.init.calculate_gain('relu'))
 
         return model
+
+
+class channel_downsampler(nn.Module):
+    def __init__(self, channels_in=60, channels_out=32):
+        super(channel_downsampler, self).__init__()
+        self.channels_in = channels_in
+        self.channels_out = channels_out
+
+        self.conv = nn.Conv1d(self.channels_in, self.channels_out, kernel_size=3, stride=1, padding=1, dilation=1, groups=1, bias=True)
+
+    def forward(self, x):
+
+        x = self.conv(x)
+
+        return x

@@ -46,7 +46,7 @@ class BaseNet(object):
 class Net(BaseNet):
     eps = 1e-6
 
-    def __init__(self, lr=1e-3, channels_in=3, cuda=True):
+    def __init__(self, lr=1e-3, channels_in=3, adapt_shape=False, cuda=True):
         super(Net, self).__init__()
         cprint('y', ' simplenet ')
         self.lr = lr
@@ -56,12 +56,14 @@ class Net(BaseNet):
         self.create_net()
         self.create_opt()
         self.epoch = 0
+        self.adapt_shape = adapt_shape
 
     def create_net(self):
         torch.manual_seed(42)
         torch.cuda.manual_seed(42)
 
         self.model = simplenet(classes=2, channels_in=self.channels_in)
+        self.downsample_model = channel_downsampler(channels_in=60, channels_out=32)
         if self.cuda:
             self.model.cuda()
             cudnn.benchmark = True
@@ -75,10 +77,29 @@ class Net(BaseNet):
     #         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9)
     # self.sched = torch.optim.lr_scheduler.LambdaLR(self.optimizer, flg.decay)
 
+    def run_adapt_shape(self, x):
+
+        batch_size  = x.shape[0]
+        x = x.squeeze(dim=1)
+        normal_shape = x[:, :, :96].view(batch_size, 160, 3, 32).permute(0,2,1,3)
+        multires_features = x[:, :, 96:].permute(0,2,1)
+
+        print(multires_features.shape)
+        multires_features = self.downsample_model(multires_features)
+        print(multires_features.shape)
+
+        multires_features = multires_features.view(batch_size, 2, 32, 160).permute(0, 1, 3, 2)
+
+        normal_shape = torch.cat((normal_shape, multires_features), dim=1)
+
+        return normal_shape
+
     def fit(self, x, y):
         x, y = to_variable(var=(x, y), cuda=self.cuda)
 
         self.optimizer.zero_grad()
+        if self.adapt_shape:
+            x = self.run_adapt_shape(x)
 
         out = self.model(x)
         loss = F.cross_entropy(out, y, size_average=True)
@@ -94,6 +115,9 @@ class Net(BaseNet):
 
     def eval(self, x, y, train=False):
         x, y = to_variable(var=(x, y), cuda=self.cuda)
+
+        if self.adapt_shape:
+            x = self.run_adapt_shape(x)
 
         out = self.model(x)
 

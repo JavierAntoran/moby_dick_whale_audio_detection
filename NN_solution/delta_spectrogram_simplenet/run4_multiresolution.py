@@ -27,17 +27,17 @@ cprint('c', '\nData:')
 
 # test train separation
 
-
 # load data
 Tn = np.load('../data/whale_trainlabels.npy')
 ready_data = np.load('../data/processed_data_250ms.npy')
-approx_features = np.load('../data/processed_data_swt_dct32.npy')
-detail_features = np.load('../data/processed_data_swt_dct32_details.npy')
 
-approx_features = np.expand_dims(approx_features, axis=3)
-detail_features = np.expand_dims(detail_features, axis=3)
+approx_features = np.load('../data/processed_data_swt_approx.npy')
+detail_features = np.load('../data/processed_data_swt_details.npy')
 
-ready_data = np.concatenate((ready_data, approx_features, detail_features), axis=3)
+# Reshape into something loadable
+ready_data = np.reshape(ready_data, newshape=(ready_data.shape[0], 160, 64), order='C')
+ready_data = np.concatenate((ready_data, approx_features, detail_features), axis=2)
+ready_data = np.expand_dims(ready_data, axis=3)
 
 print(ready_data.shape)
 print(ready_data.dtype)
@@ -55,6 +55,7 @@ print('+train = %d' % np.sum(t_train))
 x_dev = ready_data[:cutoff]
 t_dev = Tn[:cutoff]
 print('+t_dev = %d' % np.sum(t_dev))
+
 
 transform_train = transforms.Compose([
     # RandomCrop((192, 32), padding=(0, 0), pad_if_needed=False),
@@ -79,7 +80,7 @@ cprint('c', '\nNetwork:')
 use_cuda = True
 lr = 1e-4
 ########################################################################################
-net = Net(lr=lr, cuda=use_cuda, channels_in=5)
+net = Net(lr=lr, cuda=use_cuda, channels_in=5, adapt_shape=True)
 
 epoch = 0
 
