@@ -4,14 +4,21 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from skimage.draw import line, polygon
 import time
-import sys
-import cPickle
 from skimage.feature import hog
+import concurrent.futures
+import sys
+
+
+slice_pos = int(sys.argv[1])
+chunk_pos = int(sys.argv[2])
+slice_neg = int(sys.argv[3])
+chunk_neg = int(sys.argv[4])
+
+
+basePath = '../data/'
+labels = np.load(basePath + 'whale_trainlabels.npy')
 
 # Asume 160 x 128 image
-pos_neg = int(sys.argv[1])
-chunk=int(sys.argv[2])
-
 
 length = np.arange(5, 101, 5)  # 11ms advance -> 55 to 1100ms lengths
 height = np.arange(1, 76, 5)  # 3.9Hz per coefficient 0 to 1111ms lengths
@@ -46,11 +53,13 @@ for h in height:
 # plt.savefig('Template_%d.png' % Ntemplate)
 # plt.show()
 
-spectograms = np.load('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d_%d.npy' % (pos_neg,chunk))
+spectograms = np.load('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/processed_data_spectrum_250.npy')
 
 spectograms -= spectograms.mean(axis=(1,2), keepdims=True)
 spectograms /= spectograms.std(axis=(1,2), keepdims=True)
 
+data_pos = spectograms[labels == 1,:,:]
+data_neg = spectograms[labels == 0,:,:]
 
 print('spectograms loaded and normalized, shape:', spectograms.shape)
 # spec = spectograms[7]
@@ -63,34 +72,12 @@ print('spectograms loaded and normalized, shape:', spectograms.shape)
 # plt.savefig('xcorr_%d.png' % Ntemplate)
 # plt.show()
 
-def save(where, what):
-    file = open(where, 'wb')
-    file.write(cPickle.dumps(what))
-    file.close()
+chunk_n = 1
+for chunk_index in range(0,slice_pos,chunk_pos):
+    np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d_%d.npy' % (1,chunk_n,), data_pos[chunk_index:chunk_index+chunk_pos])
+    chunk_n = chunk_n + 1
 
-features = np.zeros((spectograms.shape[0], len(templates), 3))
-xcorrs = []
-for i in range(spectograms.shape[0]):
-    tic0 = time.time()
-    spec_xcorr = []
-    for temp_idx in range(len(templates)):
-
-        # print('template %d of %d for spectrogram %d of %d' % (temp_idx, len(templates), i, spectograms.shape[0]))
-
-        spec = spectograms[i]
-        xcorr = signal.correlate2d(spec, templates[temp_idx], mode='full', boundary='fill', fillvalue=0)
-	spec_xcorr.append(xcorr)
-        xcorr_max = xcorr.max()
-        xcorr_mean = xcorr.mean()
-        xcorr_sdt = xcorr.std()
-
-        features[i, temp_idx, :] = np.array([xcorr_max, xcorr_mean, xcorr_sdt])
-    xcorrs.append(spec_xcorr)
-    tic1 = time.time()
-    print('finished spectogram %d of %d. Ellapsed time: %d s' % (i, spectograms.shape[0], tic1-tic0))
-# out = hog(xcorr, block_norm='L2-Hys')
-
-print(features.shape)
-
-np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solutiondata/data/features/template_features_%d_%d.npy'%(pos_neg,chunk), features)
-save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solutiondata/data/xcorrs/template_xcorrs_%d_%d.npy'%(pos_neg,chunk), xcorrs)
+chunk_n = 1
+for chunk_index in range(0,slice_neg,chunk_neg):
+    np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d_%d.npy' % (0,chunk_n,), data_pos[chunk_index:chunk_index+chunk_neg])
+    chunk_n = chunk_n + 1
