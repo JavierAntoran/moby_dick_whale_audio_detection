@@ -28,10 +28,10 @@ data_std = np.std(data, axis=(0, 1), keepdims=True)
 data /= data_std
 #
 # Positive HMM
-Q = 15  # N states
+Q = 20 # N states
 G = np.empty((Q), dtype=object)
 for q in range(Q):
-    G[q] = gmm_EM(nb_clust=4, dim=30, centers=None, covars=None, weights=None)
+    G[q] = gmm_EM(nb_clust=3, dim=30, centers=None, covars=None, weights=None)
 hmm_pos = HMM(Q, G, p0=None, debug=False)
 hmm_pos.load('hmm_pos')
 #
