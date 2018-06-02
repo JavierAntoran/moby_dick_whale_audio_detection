@@ -25,7 +25,7 @@ data_pos /= data_std
 data_neg -= data_mean
 data_neg /= data_std
 
-Q = 20  # N states
+Q = 15  # N states
 
 G = np.empty((Q), dtype=object)
 for q in range(Q):
