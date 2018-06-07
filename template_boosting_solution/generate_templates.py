@@ -92,5 +92,5 @@ for i in range(spectograms.shape[0]):
 
 print(features.shape)
 
-np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solutiondata/data/features/template_features_%d_%d.npy'%(pos_neg,chunk), features)
-save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solutiondata/data/xcorrs/template_xcorrs_%d_%d.npy'%(pos_neg,chunk), xcorrs)
+np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/features/template_features_%d_%d.npy'%(pos_neg,chunk), features)
+save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/xcorrs/template_xcorrs_%d_%d.npy'%(pos_neg,chunk), xcorrs)
