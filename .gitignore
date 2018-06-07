@@ -1,6 +1,9 @@
 data/*
 */data/*
 whale_data/*
+.condor/
+*/.condor/
+
 # General
 .DS_Store
 .AppleDouble
