@@ -2,6 +2,11 @@ from torch.backends import cudnn
 from src.utils import *
 from simplenet import *
 
+#
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+#
 class BaseNet(object):
     def __init__(self):
         cprint('c', '\nNet:')
@@ -58,14 +63,17 @@ class Net(BaseNet):
         self.epoch = 0
         self.adapt_shape = adapt_shape
 
+        self.test=False
+
     def create_net(self):
         torch.manual_seed(42)
         torch.cuda.manual_seed(42)
 
         self.model = simplenet(classes=2, channels_in=self.channels_in)
-        self.downsample_model = channel_downsampler(channels_in=60, channels_out=32)
+        self.downsample_model = channel_downsampler(channels_in=120, channels_out=64)
         if self.cuda:
             self.model.cuda()
+            self.downsample_model.cuda()
             cudnn.benchmark = True
 
         print('    Total params: %.2fM' % (self.get_nb_parameters() / 1000000.0))
@@ -81,14 +89,35 @@ class Net(BaseNet):
 
         batch_size  = x.shape[0]
         x = x.squeeze(dim=1)
-        normal_shape = x[:, :, :96].view(batch_size, 160, 3, 32).permute(0,2,1,3)
-        multires_features = x[:, :, 96:].permute(0,2,1)
+        normal_shape = x[:, :, :96].contiguous().view(batch_size, 160, 32, 3).permute(0,3,1,2)
+        multires_features = x[:, :, 96:].permute(0,2,1)        # batch_size, 120, 160
 
-        print(multires_features.shape)
+        if not self.test:
+            self.test = True
+            plt.figure()
+            plt.imshow(normal_shape[0, 0].data.cpu().numpy().T, cmap='jet', aspect='auto')
+            plt.gca().invert_yaxis()
+            plt.savefig('test0.png')
+            plt.figure()
+            plt.imshow(normal_shape[0, 1].data.cpu().numpy().T, cmap='jet', aspect='auto')
+            plt.gca().invert_yaxis()
+            plt.savefig('test1.png')
+            plt.figure()
+            plt.imshow(normal_shape[0, 2].data.cpu().numpy().T, cmap='jet', aspect='auto')
+            plt.gca().invert_yaxis()
+            plt.savefig('test2.png')
+            plt.figure()
+            plt.imshow(multires_features[0].data.cpu().numpy(), cmap='jet', aspect='auto')
+            plt.gca().invert_yaxis()
+            plt.savefig('test3.png')
+            plt.figure()
+            # plt.imshow(normal_shape[0, 4].data.cpu().numpy().T, cmap='jet', aspect='auto')
+            # plt.gca().invert_yaxis()
+            # plt.savefig('test4.png')
+
         multires_features = self.downsample_model(multires_features)
-        print(multires_features.shape)
 
-        multires_features = multires_features.view(batch_size, 2, 32, 160).permute(0, 1, 3, 2)
+        multires_features = multires_features.permute(0, 2, 1).contiguous().view(batch_size, 160, 32, 2).permute(0, 3, 1, 2)
 
         normal_shape = torch.cat((normal_shape, multires_features), dim=1)
 

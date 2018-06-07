@@ -35,7 +35,7 @@ approx_features = np.load('../data/processed_data_swt_approx.npy')
 detail_features = np.load('../data/processed_data_swt_details.npy')
 
 # Reshape into something loadable
-ready_data = np.reshape(ready_data, newshape=(ready_data.shape[0], 160, 64), order='C')
+ready_data = np.reshape(ready_data, newshape=(ready_data.shape[0], 160, 96), order='C')
 ready_data = np.concatenate((ready_data, approx_features, detail_features), axis=2)
 ready_data = np.expand_dims(ready_data, axis=3)
 
@@ -68,10 +68,10 @@ transform_test = transforms.Compose([
 ])
 
 trainset = Datafeed(x_train, t_train, transform=transform_train)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, pin_memory=True, num_workers=3)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, pin_memory=False, num_workers=1)
 
 testset = Datafeed(x_dev, t_dev, transform=transform_test)
-testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True, pin_memory=True, num_workers=3)
+testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True, pin_memory=False, num_workers=1)
 
 ## ---------------------------------------------------------------------------------------------------------------------
 # net dims
