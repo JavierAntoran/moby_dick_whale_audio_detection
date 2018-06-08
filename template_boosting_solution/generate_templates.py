@@ -97,9 +97,6 @@ for h in height:
 
 spectrograms = np.load('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d.npy' % (chunk,))
 
-spectrograms -= spectrograms.mean(axis=(1,2), keepdims=True)
-spectrograms /= spectrograms.std(axis=(1,2), keepdims=True)
-
 
 print('spectrograms loaded and normalized, shape:', spectrograms.shape)
 # spec = spectograms[7]
