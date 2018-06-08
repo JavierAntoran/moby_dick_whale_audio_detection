@@ -3,14 +3,63 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 from skimage.draw import line, polygon
+from scipy import ndimage
 import time
 import sys
 import cPickle
 from skimage.feature import hog
 
+def image_statistics(Z):
+    #Input: Z, a 2D array, hopefully containing some sort of peak
+    #Output: cx,cy,sx,sy,skx,sky,kx,ky
+    #cx and cy are the coordinates of the centroid
+    #sx and sy are the stardard deviation in the x and y directions
+    #skx and sky are the skewness in the x and y directions
+    #kx and ky are the Kurtosis in the x and y directions
+    #Note: this is not the excess kurtosis. For a normal distribution
+    #you expect the kurtosis will be 3.0. Just subtract 3 to get the
+    #excess kurtosis.
+    import numpy as np
+
+    h,w = np.shape(Z)
+
+    x = range(w)
+    y = range(h)
+
+
+    #calculate projections along the x and y axes
+    yp = np.sum(Z,axis=1)
+    xp = np.sum(Z,axis=0)
+
+    #centroid
+    cx = np.sum(x*xp)/(np.sum(xp))
+    cy = np.sum(y*yp)/np.sum(yp)
+
+    #standard deviation
+    x2 = (x-cx)**2
+    y2 = (y-cy)**2
+
+    sx = np.sqrt( np.sum(x2*xp)/np.sum(xp) )
+    sy = np.sqrt( np.sum(y2*yp)/np.sum(yp) )
+
+    #skewness
+    x3 = (x-cx)**3
+    y3 = (y-cy)**3
+
+    skx = np.sum(xp*x3)/(np.sum(xp) * sx**3)
+    sky = np.sum(yp*y3)/(np.sum(yp) * sy**3)
+
+    #Kurtosis
+    x4 = (x-cx)**4
+    y4 = (y-cy)**4
+    kx = np.sum(xp*x4)/(np.sum(xp) * sx**4)
+    ky = np.sum(yp*y4)/(np.sum(yp) * sy**4)
+
+    return cx,cy,sx,sy,skx,sky,kx,ky
+
+
 # Asume 160 x 128 image
-pos_neg = int(sys.argv[1])
-chunk=int(sys.argv[2])
+chunk=int(sys.argv[1])
 
 
 length = np.arange(5, 101, 5)  # 11ms advance -> 55 to 1100ms lengths
@@ -46,13 +95,13 @@ for h in height:
 # plt.savefig('Template_%d.png' % Ntemplate)
 # plt.show()
 
-spectograms = np.load('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d_%d.npy' % (pos_neg,chunk))
+spectrograms = np.load('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d.npy' % (chunk,))
 
-spectograms -= spectograms.mean(axis=(1,2), keepdims=True)
-spectograms /= spectograms.std(axis=(1,2), keepdims=True)
+spectrograms -= spectrograms.mean(axis=(1,2), keepdims=True)
+spectrograms /= spectrograms.std(axis=(1,2), keepdims=True)
 
 
-print('spectograms loaded and normalized, shape:', spectograms.shape)
+print('spectrograms loaded and normalized, shape:', spectrograms.shape)
 # spec = spectograms[7]
 # xcorr = signal.correlate2d(spec, templates[Ntemplate], mode='full', boundary='fill', fillvalue=0)
 #
@@ -68,29 +117,29 @@ def save(where, what):
     file.write(cPickle.dumps(what))
     file.close()
 
-features = np.zeros((spectograms.shape[0], len(templates), 3))
-xcorrs = []
-for i in range(spectograms.shape[0]):
+features = np.zeros((spectrograms.shape[0], len(templates), 11))
+
+for i in range(spectrograms.shape[0]):
     tic0 = time.time()
-    spec_xcorr = []
     for temp_idx in range(len(templates)):
 
         # print('template %d of %d for spectrogram %d of %d' % (temp_idx, len(templates), i, spectograms.shape[0]))
 
-        spec = spectograms[i]
+        spec = spectrograms[i]
         xcorr = signal.correlate2d(spec, templates[temp_idx], mode='full', boundary='fill', fillvalue=0)
-	spec_xcorr.append(xcorr)
+        xcorr += xcorr.min()
+
         xcorr_max = xcorr.max()
         xcorr_mean = xcorr.mean()
         xcorr_sdt = xcorr.std()
 
-        features[i, temp_idx, :] = np.array([xcorr_max, xcorr_mean, xcorr_sdt])
-    xcorrs.append(spec_xcorr)
+        cx, cy, sx, sy, skx, sky, kx, ky = image_statistics(xcorr)
+        features[i, temp_idx, :] = np.array([xcorr_max, xcorr_mean, xcorr_sdt, cx, cy, sx, sy, skx, sky, kx, ky])
+        
     tic1 = time.time()
-    print('finished spectogram %d of %d. Ellapsed time: %d s' % (i, spectograms.shape[0], tic1-tic0))
+    print('finished spectrogram %d of %d. Ellapsed time: %d s' % (i, spectrograms.shape[0], tic1-tic0))
 # out = hog(xcorr, block_norm='L2-Hys')
 
 print(features.shape)
 
-np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/features/template_features_%d_%d.npy'%(pos_neg,chunk), features)
-save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/xcorrs/template_xcorrs_%d_%d.npy'%(pos_neg,chunk), xcorrs)
+np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/features/template_features_%d.npy'%(chunk,), features)

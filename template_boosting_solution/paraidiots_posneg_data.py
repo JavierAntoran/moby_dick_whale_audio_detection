@@ -9,7 +9,10 @@ import concurrent.futures
 import sys
 
 
-chunk = int(sys.argv[1])
+slice_pos = int(sys.argv[1])
+chunk_pos = int(sys.argv[2])
+slice_neg = int(sys.argv[3])
+chunk_neg = int(sys.argv[4])
 
 
 basePath = '../data/'
@@ -51,12 +54,21 @@ for h in height:
 # plt.show()
 
 print('Loading data spectrum')
-spectrograms = np.load('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/processed_data_spectrum_250.npy')
+spectograms = np.load('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/processed_data_spectrum_250.npy')
 
-spectrograms -= spectrograms.mean(axis=(1,2), keepdims=True)
-spectrograms /= spectrograms.std(axis=(1,2), keepdims=True)
+spectograms -= spectograms.mean(axis=(1,2), keepdims=True)
+spectograms /= spectograms.std(axis=(1,2), keepdims=True)
 
-print('spectrograms loaded and normalized, shape:', spectrograms.shape)
+data_pos = spectograms[labels == 1,:,:]
+data_neg = spectograms[labels == 0,:,:]
+
+if (slice_pos == 0):
+    slice_pos = data_pos.shape[0]
+
+if (slice_neg == 0):
+    slice_neg = data_neg.shape[0]
+
+print('spectograms loaded and normalized, shape:', spectograms.shape)
 # spec = spectograms[7]
 # xcorr = signal.correlate2d(spec, templates[Ntemplate], mode='full', boundary='fill', fillvalue=0)
 #
@@ -67,9 +79,18 @@ print('spectrograms loaded and normalized, shape:', spectrograms.shape)
 # plt.savefig('xcorr_%d.png' % Ntemplate)
 # plt.show()
 
+print('Slice positive %s/%s' % (slice_pos, data_pos.shape[0]))
+
 chunk_n = 1
-for chunk_index in range(0,spectrograms.shape[0],chunk):
-    np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d.npy' % (chunk_n,), spectrograms[chunk_index:chunk_index+chunk])
-    print('Saved chunk number %s/%s' % (chunk_n,int(spectrograms.shape[0]/chunk)))
+for chunk_index in range(0,slice_pos,chunk_pos):
+    np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d_%d.npy' % (1,chunk_n,), data_pos[chunk_index:chunk_index+chunk_pos])
+    print('Saved chunk number %s/%s' % (chunk_n,slice_pos/chunk_pos))
     chunk_n = chunk_n + 1
 
+
+print('Slice negative %s/%s' % (slice_neg, data_neg.shape[0]))
+chunk_n = 1
+for chunk_index in range(0,slice_neg,chunk_neg):
+    np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d_%d.npy' % (0,chunk_n,), data_pos[chunk_index:chunk_index+chunk_neg])
+    print('Saved negative chunk number %s/%s' % (chunk_n,slice_neg/chunk_neg))
+    chunk_n = chunk_n + 1
