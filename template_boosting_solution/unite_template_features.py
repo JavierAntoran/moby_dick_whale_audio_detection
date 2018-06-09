@@ -17,7 +17,7 @@ for i in range(1, Nfiles+1):
 
 
 
-combine_feats = np.reshape(combine_feats, (Nspectrograms, Ntemplates*Ntemplates))
+combine_feats = np.reshape(combine_feats, (Nspectrograms, Ntemplates*Nfeats))
 print(combine_feats.shape)
 
 np.save('./data/template_features_combined.npy', combine_feats)
