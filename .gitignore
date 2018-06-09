@@ -2,6 +2,9 @@ data/*
 */data/*
 whale_data/*
 .condor/
+.clog
+.log
+.err
 */.condor/
 
 # General
