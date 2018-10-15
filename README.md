@@ -1,6 +1,8 @@
 # moby-dick Whale Detection
 
- Feature extraction, HMMs, Neural Nets, and Boosting for [Kaggle Cornell Whale detection challenge](https://www.kaggle.com/c/whale-detection-challenge).
+Feature extraction, HMMs, Neural Nets, and Boosting for [Kaggle Cornell Whale detection challenge](https://www.kaggle.com/c/whale-detection-challenge).
+
+For a more in depth overview see the project <a href="slides/whale_presentation.pdf" download>slides</a>.
 
 ## Results and Evaluation
 
