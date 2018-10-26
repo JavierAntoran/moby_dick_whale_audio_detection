@@ -2,6 +2,13 @@ from __future__ import division
 import numpy as np
 from scipy.signal import decimate
 
+def mkdir(paths):
+    if not isinstance(paths, (list, tuple)):
+        paths = [paths]
+    for path in paths:
+        if not os.path.isdir(path):
+            os.makedirs(path)
+
 def windower(x, M, N):
     # M avance entre vetanas
     # N windowsize
@@ -73,6 +80,8 @@ def get_delta_mtx(the_filter, Nwin):
     W1 = W1[:, :-pad_e]
     return W1
 
+
+mkdir('data')
 
 decimate_factor = 2
 fs = 2000 / decimate_factor

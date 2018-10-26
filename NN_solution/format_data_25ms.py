@@ -18,6 +18,12 @@ sounds = np.load('data/whale_traindata.npy')
 filter1 = np.array([-1.0000, -0.7500, -0.5000, -0.2500, 0, 0.2500, 0.5000, 0.7500, 1.0000])
 filter2 = np.array([1.0000, 0.2500, -0.2857, -0.6071, -0.7143, -0.6071, -0.2857, 0.2500, 1.0000])
 
+def mkdir(paths):
+    if not isinstance(paths, (list, tuple)):
+        paths = [paths]
+    for path in paths:
+        if not os.path.isdir(path):
+            os.makedirs(path)
 
 def get_mtx_deltas(X, filter1, filter2):
     Nwin = X.shape[0]
@@ -48,6 +54,8 @@ def get_delta_mtx(the_filter, Nwin):
     W1 = W1[:, :-pad_e]
     return W1
 
+
+mkdir('data')
 
 decimate_factor = 2
 fs = 2000 / decimate_factor
