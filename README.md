@@ -1,20 +1,33 @@
 # moby-dick Whale Detection
 
-<!--  *? Short sentence on NARW and their upcall and why finding them is important-->
+This repo contains our approach to to solving the
+[Kaggle Cornell Whale detection challenge](https://www.kaggle.com/c/whale-detection-challenge). The task
+is to identify North Atlantic Right Whale (NARW) upcalls from a dataset of audio recordings. These recordings
+are taken by microphones placed on buoys.
+This makes the task dificult as sea movements introduce a lot of noise.
+Also, NARWs and other marine mammals have calls which are hard to distinguish.
 
-This task is difficult as microphones on buoys record a lot of noise. Also, NARWs and other marine mammals have very similar
-calls. This is shown in the following spectrograms.
-
-<img src="images/spectrogram_comparison.png" width="680" height="390" />
-
-We propose and compare three approaches to solving the
- [Kaggle Cornell Whale detection challenge](https://www.kaggle.com/c/whale-detection-challenge):
+We try three approaches for classification:
 HMMs, Neural Nets, and Gradient Boosting. We also propose a feature extraction scheme for each approach.
+
+
+[Results and Evaluation](#results-and-Evaluation)\
+[Preparing the dataset](#preparing-the-dataset)\
+[Neural network approach](#neural-networks)\
+[HMM approach](#Hidden-markov-models)\
+[Gradient boosting approach](#gradient-boosting)\
+[Additional resources](#additional-resources)
+
+
+Some sample spectrograms:
+
+<img src="images/spectrogram_comparison.png" width="720" height="390" />
+
 
 We are provided with 30000 audio clips of 2 second duration, sampled at 2kHz.
 This gives us frequency resolution up to 1kHz. NARW upcalls are generally in the range of 50-450 Hz.
 We therefore apply a downsampling factor of 2 to all audio clips.
- The dataset is umbalanced with only 7027 possitive examples (23.4%).
+ The dataset is unbalanced with only 7027 possitive examples (23.4%).
  There are also 70000 test clips which are unlabelled.
  We do not use these as we dont have the labels, we
  will use K fold cross validation instead.
@@ -22,12 +35,6 @@ We therefore apply a downsampling factor of 2 to all audio clips.
  [Here](https://vimeo.com/227009627) is a video clip showing how a NARW upcall sounds.
 
 For a more in depth overview see the project <a href="slides/whale_presentation.pdf" download>slides</a>.
-
-[Preparing the dataset](#preparing-the-dataset)\
-[Neural network approach](#neural-networks)\
-[HMM approach](#Hidden-markov-models)\
-[Gradient boosting approach](#gradient-boosting)\
-[Additional resources](#additional-resources)\
 
 ## Results and Evaluation
 
@@ -69,16 +76,16 @@ and feed them into our classifier CNN.
 [Notebook for this section](https://github.com/JavierAntoran/moby_dick/blob/master/Notebooks/format_data_NN.ipynb)
 
 
-First, the time series are separated into overlapping windows. We choose a window
-size of 25ms and a time advance between window starts of 10ms. These are
+First, the time series are separated into overlapping frames. We choose a frame
+size of 25ms and a time advance between frame starts of 10ms. These are
 typical values for speech processing. However, because of the time-frequency uncertainty
 principle, with a small window, our estimation of frequency coefficient
 will have more variability. This is especially true for lower frequencies,
 where whale upcalls reside. For this reason, we generate a second set of features
-with a 250 ms window and a 11 ms step between window starts (this values is chosen in order to
-obtain a roughly similar amount of windows).
+with a 250 ms frane and a 11 ms step between frame starts (this values is chosen in order to
+obtain a roughly similar amount of frames in both cases).
 
-We apply a hamming window and calculate the 256 point fft of every window.
+We apply a hamming window and calculate the 256 point fft of every frame.
 We keep the first 128 coefficients as our data is real and the rest of the
 coefficients will be symmetric. The resulting spectrograms are shown in the
 following plot:
@@ -99,7 +106,7 @@ Finally, we compute the first and second derivatives of our features with respec
 We stack the spectrogram and its derivates as to form channels which we will
 pass as input to our CNN.
 
-<img src="images/delta_feats.png" width="400" height="540" />
+<img src="images/delta_feats.png" width="400" height="500" />
 
 
 To parse the data with a 25ms window run the following commands:
@@ -119,7 +126,8 @@ Extracted features will be saved to the /NN_solution/data directory.
 ### Network architecture, Training and Evaluation
 
 We use a 9 layer fully convolutional network, a slightly modified version of the simplenet v2 architecture: https://github.com/Coderx7/SimpNet.
-The global max pooling layer at the end of the network allows us to use different
+Our implementation, which is heavily based on [this one](https://github.com/Coderx7/SimpleNet_Pytorch),
+ is contained in the NN_solution/delta_spectrogram_simplenet/simplenet.py file. The global max pooling layer at the end of the network allows us to use different
 sized images as input. We can use the same architecture for features
 obtained with 25ms and 250ms fft windows. The input sizes as Nx3x198x32 and Nx3x196x32.
 
@@ -155,9 +163,89 @@ Pytorch models will be saved to the NN_solution/models directory.
 
 ## Hidden Markov Models
 
+We separate our data into windows, we extract 30 multiresolution features from each window
+using the stationary wavelet transform. We then use them to train 2 GMM-HMMs.
+ We train one on possitve examples and the other one
+on negative examples. We calculate the probability of there being a whale call
+as the softmax of the normalized log likelihoog of
+a sequence under each HMM.
+
 ### Feature extraction
 
+We use the stationary transform (SWT) to get around the time-frequency resolution
+tradeoff while maintaining the length of our time series. This is important as we
+need to be able to temporarily allign the SWT coefficients extracted at each level.
+
+Instead of downsampling the signal as is done in the DWT, the SWT upsamples the filter after each step.
+This is more computationally expensive but preserves signal length. The following schematic shows the SWT
+filtering chain.
+
+<img src="images/swt_schematic.png" width="600" height="220"/>
+
+We use the db2 wavelet which has the following form:
+
+<img src="images/db2.png" width="300" height="200"/>
+
+We keep the aproximation signals (output of lowpass filters) at levels 1, 2 and 3.
+We then separate thses signals into 250ms frames with a 10ms step between frame starts.
+We apply a hamming window to each frame and compute their 256 point FFT. Again, because
+our original signal is real valued, we obtain 128 frequency coefficients.
+
+<img src="images/swt_spectrograms.png" width="700" height="200"/>
+
+We then apply our whale filter bank to all three signals. We only keep coefficients
+that are located in the passing band of their corresponding wavelet. We stack these
+coefficients in order to form the following 'multiresolution' feature map:
+
+<img src="images/multiresolution.png" width="300" height="250"/>
+
+We then apply a DCT transformation to each frame's frequency coefficients in order
+to obtain decorrelated features. Finally we normalize the features by
+ substracting their the mean and diving them by their standard deviation.
+ A regular spectrogram and its corresponding feature map are shown
+side by side:
+
+<img src="images/dct_multiresolution.png" width="630" height="280"/>
+
+Run the following commands in order to execute the described feature extraction
+procedure.
+```bash
+cd HMM_solution/
+python format_data_wavelets_dct.py
+```
+
+Extracted features will be saved to the /HMM_solution/data directory.
+
 ### HMM Training and Evaluation
+Our HMM implementation is written in numpy and can be found in the HMM_solution/hmm/modules/HMM.py file. We train
+them using the viterbi algorithm. We place a Dirichlet prior on state transition
+probabilities in order to aid training. This also asures that we end up with no
+0 probability transitions.
+Our GMM implementation is also written in numpy and can be found in the HMM_solution/hmm/modules/GMM.py file.
+We train our GMMs with two EM algorithm steps each time we pass our data through
+the HMM.
+
+<img src="images/HMM_GMM.png" width="380" height="220"/>
+
+We obtain poor results with this method. Using 10 hidden state HMMs with
+a 3 gaussian mixture per hidden state, we obtain the following ROC:
+
+<img src="images/best_hmm_roc.jpg" width="360" height="290"/>
+
+To train both HMMs, run the following commands:
+```bash
+cd HMM_solution/hmm
+python run1_train_hmm.py
+```
+
+To evaluate the HMMs and generate the ROC curve, run:
+```bash
+cd HMM_solution/hmm
+python run2_eval_hmm.py
+```
+
+Results will be saved to the HMM_solution/results directory.
+HMM models are saved as pickle files to the HMM_solution directory.
 
 ## Gradient Boosting
 
@@ -172,6 +260,6 @@ Mamal audio detection can be found
 in the [papers](https://github.com/JavierAntoran/moby_dick/tree/master/papers) folder.
 
 * Contest winners repo: https://github.com/nmkridler/moby2
-* Simplenet paper: HasanPour, Seyyed Hossein et al. “Let ’ s keep it simple : Using simple architectures to outperform deeper architectures.” (2016).
-\\https://arxiv.org/pdf/1608.06037.pdf
+* Simplenet paper: HasanPour, Seyyed Hossein et al. “Let ’ s keep it simple : Using simple architectures to outperform deeper architectures.” (2016).\
+https://arxiv.org/pdf/1608.06037.pdf
 *
