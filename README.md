@@ -227,8 +227,8 @@ the HMM.
 
 <img src="images/HMM_GMM.png" width="380" height="220"/>
 
-We obtain poor results with this method. Using 10 hidden state HMMs with
-a 3 gaussian mixture per hidden state, we obtain the following ROC:
+We obtain poor results with this method. Using a 10 hidden state HMMs with
+a 3 component GMM per hidden state, we obtain the following ROC:
 
 <img src="images/best_hmm_roc.jpg" width="360" height="290"/>
 
@@ -262,4 +262,3 @@ in the [papers](https://github.com/JavierAntoran/moby_dick/tree/master/papers) f
 * Contest winners repo: https://github.com/nmkridler/moby2
 * Simplenet paper: HasanPour, Seyyed Hossein et al. “Let ’ s keep it simple : Using simple architectures to outperform deeper architectures.” (2016).\
 https://arxiv.org/pdf/1608.06037.pdf
-*
