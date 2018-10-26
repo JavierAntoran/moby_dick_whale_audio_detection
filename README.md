@@ -5,7 +5,7 @@
 This task is difficult as microphones on buoys record a lot of noise. Also, NARWs and other marine mammals have very similar
 calls. This is shown in the following spectrograms.
 
-<img src="images/spectrogram_comparison.png" width="560" height="320" />
+<img src="images/spectrogram_comparison.png" width="680" height="390" />
 
 We propose and compare three approaches to solving the
  [Kaggle Cornell Whale detection challenge](https://www.kaggle.com/c/whale-detection-challenge):
@@ -23,11 +23,11 @@ We therefore apply a downsampling factor of 2 to all audio clips.
 
 For a more in depth overview see the project <a href="slides/whale_presentation.pdf" download>slides</a>.
 
-[Preparing the dataset](#preparing-the-dataset)\\
-[Neural network approach](#neural-networks)\\
-[HMM approach](#Hidden-markov-models)\\
-[Gradient boosting approach](#gradient-boosting)\\
-[Additional resources](#additional-resources)\\
+[Preparing the dataset](#preparing-the-dataset)\
+[Neural network approach](#neural-networks)\
+[HMM approach](#Hidden-markov-models)\
+[Gradient boosting approach](#gradient-boosting)\
+[Additional resources](#additional-resources)\
 
 ## Results and Evaluation
 
@@ -66,7 +66,7 @@ and feed them into our classifier CNN.
 
 ### Feature extraction
 
-[Notebook for this section](*?)
+[Notebook for this section](https://github.com/JavierAntoran/moby_dick/blob/master/Notebooks/format_data_NN.ipynb)
 
 
 First, the time series are separated into overlapping windows. We choose a window
