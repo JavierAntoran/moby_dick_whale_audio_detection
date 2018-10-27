@@ -45,6 +45,7 @@ shuffle_in_unison(dset, tgets)
 plt.figure()
 
 Nparts = 10
+roc_auc_vector = np.zeros(Nparts)
 for n_run in range(Nparts):
     x_train, t_train, x_test, t_test = gen_crossval_split(dset, tgets, n_run, Nparts, shuffle=False)
 
@@ -105,15 +106,15 @@ for n_run in range(Nparts):
     fpr, tpr, threshold = metrics.roc_curve(t_test, y_test_preds)
 
     roc_auc = metrics.auc(fpr, tpr)
-
+    roc_auc_vector[n_run] = roc_auc
 
 # SAVE ROC CURVE
 
     lw = 1.2
-    plt.plot(fpr, tpr, color='C0',
+    plt.plot(fpr, tpr,
              lw=lw, label='ROC curve (area = %0.3f)' % roc_auc)
 
-plt.plot([0, 1], [0, 1], color='C2', lw=lw, linestyle='--')
+plt.plot([0, 1], [0, 1], color='k', lw=lw, linestyle='--')
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.0])
 plt.xlabel('False Positive Rate')
@@ -121,3 +122,6 @@ plt.ylabel('True Positive Rate')
 plt.title(' Best Receiver Operating Characteristic')
 plt.legend(loc="lower right")
 plt.savefig('results/best_ROC_crossvalidate.png')
+
+print('roc_auc mean', roc_auc_vector.mean())
+print('roc_auc std', roc_auc_vector.std())

@@ -39,6 +39,9 @@ for i in range(sounds.shape[0]):
 
     ready_data[i] = s
 
+    ready_data -= ready_data.mean(axis=(1, 2), keepdims=True)
+    ready_data /= ready_data.std(axis=(1, 2), keepdims=True)
+
 print(ready_data.shape)
 print(ready_data.dtype)
 # ready_data = ready_data.astype(np.float32)

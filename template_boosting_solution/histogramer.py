@@ -9,7 +9,6 @@ import sys
 import cPickle
 from skimage.feature import hog
 
-# TODO: sumar minimo
 
 def image_statistics(Z):
     #Input: Z, a 2D array, hopefully containing some sort of peak

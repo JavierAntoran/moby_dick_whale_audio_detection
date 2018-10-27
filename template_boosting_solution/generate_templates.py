@@ -95,7 +95,7 @@ for h in height:
 # plt.savefig('Template_%d.png' % Ntemplate)
 # plt.show()
 
-spectrograms = np.load('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/spectrograms/processed_data_norm_spectrum_250_%d.npy' % (chunk,))
+spectrograms = np.load('data/processed_data_norm_spectrum_250_%d.npy' % (chunk,))
 
 
 print('spectrograms loaded and normalized, shape:', spectrograms.shape)
@@ -139,4 +139,4 @@ for i in range(spectrograms.shape[0]):
 
 print(features.shape)
 
-np.save('/extra/scratch03/jantoran/Documents/moby_dick/template_boosting_solution/data/features/template_features_%d.npy'%(chunk,), features)
+np.save('data/template_features_%d.npy'%(chunk,), features)

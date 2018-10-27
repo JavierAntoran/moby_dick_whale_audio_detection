@@ -60,13 +60,13 @@ param['min_child_weight'] = 1 # minimum weight asigned to leaf node in order to 
 param['learning_rate'] = 0.3 # (eta) shrinks weights to make learning more conservative  #DEFAULT:0.3
 
 # More Regularization
-param['subsample'] = 0.5 # subsample ratio of the training instance to grow trees #DEFAULT:1
-param['colsample_bytree'] = 1
+param['subsample'] = 0.6 # subsample ratio of the training instance to grow trees #DEFAULT:1
+param['colsample_bytree'] = 0.9
 
 # Balancing. Use scale_pos_weight OR max_delta_step
 ratio = float(np.sum(t_train==0)) / np.sum(t_train==1)
 print(ratio)
-# param['scale_pos_weight'] = ratio
+param['scale_pos_weight'] = ratio
 ###################
 # param['max_delta_step'] = 10 # helps make tree update conservative??  #DEFAULT:0 no limit
 
