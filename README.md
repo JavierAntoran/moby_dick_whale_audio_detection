@@ -256,7 +256,7 @@ python run2_eval_hmm.py
 Results will be saved to the HMM_solution/results directory.
 HMM models are saved as pickle files to the HMM_solution directory.
 
-## Gradient Boosting
+## Templates and Gradient Boosting
 
 
 ### Feature extraction
