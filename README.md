@@ -278,20 +278,21 @@ mkdir data
 cp ../whale_traindata.npy data
 cp ../whale_trainlabels.npy data
 python format_data.py # Get spectrograms
+python paraidiots_data.py 10
 ```
-
---> code to split spectrograms into chunks
 
 With 30000 spectrograms and 300 templates, processing all of our data will
 require 9000000 2d correlations. This will be slow on a single CPU, and is best
-run as a distributed task. We extract the following features from each cross correlated feature map:
+run as a distributed task. 'python paraidiots_data.py 10' creates 3000 chunks of 10 spectrogams for task distribution.
+We extract the following features from each cross correlated feature map:
 max value, mean value, std all values. We also extract the following axis wise (x, y) features:
 mean, std, skewness and kurtosis. This results in 3300 features per spectrogram.
 
---> code calculate cross correlations as a distributed task
+In order to achieve task distribution, we make use of HTCondor(https://research.cs.wisc.edu/htcondor/) which was installed on the server. It is a software framework for coarse-grained distributed parallelization of computationally intensive tasks.
+Through a custom bash script we are able to submit N tasks to condor queue. In this case there will be 3000 tasks computing the spectrogram features.
 
 ```bash
-python generate_templates.py i
+python generate_templates.py 3000
 ```
 
 ### Model Training and Evaluation
